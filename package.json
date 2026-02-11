@@ -1,0 +1,87 @@
+{
+  "name": "@cryptoart/creator-core-sdk",
+  "version": "0.1.0",
+  "description": "TypeScript SDK for deploying and managing NFT collections using Creator Core contracts",
+  "main": "./dist/index.js",
+  "module": "./dist/index.mjs",
+  "types": "./dist/index.d.ts",
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.mjs",
+      "require": "./dist/index.js"
+    },
+    "./react": {
+      "types": "./dist/react/index.d.ts",
+      "import": "./dist/react/index.mjs",
+      "require": "./dist/react/index.js"
+    }
+  },
+  "files": [
+    "dist",
+    "abis",
+    "README.md",
+    "LICENSE"
+  ],
+  "scripts": {
+    "build": "tsup",
+    "dev": "tsup --watch",
+    "test": "vitest run",
+    "test:watch": "vitest",
+    "test:coverage": "vitest run --coverage",
+    "lint": "eslint src --ext .ts,.tsx",
+    "lint:fix": "eslint src --ext .ts,.tsx --fix",
+    "typecheck": "tsc --noEmit",
+    "format": "prettier --write \"src/**/*.{ts,tsx}\"",
+    "format:check": "prettier --check \"src/**/*.{ts,tsx}\"",
+    "prepublishOnly": "npm run build && npm run test"
+  },
+  "keywords": [
+    "nft",
+    "erc721",
+    "erc1155",
+    "creator-core",
+    "manifold",
+    "ethereum",
+    "base",
+    "web3",
+    "typescript",
+    "sdk"
+  ],
+  "author": "wowsuchbot",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/wowsuchbot/creator-core-sdk.git"
+  },
+  "bugs": {
+    "url": "https://github.com/wowsuchbot/creator-core-sdk/issues"
+  },
+  "homepage": "https://github.com/wowsuchbot/creator-core-sdk#readme",
+  "dependencies": {
+    "viem": "^2.23.6"
+  },
+  "peerDependencies": {
+    "react": "^18.0.0 || ^19.0.0"
+  },
+  "peerDependenciesMeta": {
+    "react": {
+      "optional": true
+    }
+  },
+  "devDependencies": {
+    "@types/node": "^20.0.0",
+    "@types/react": "^18.0.0",
+    "@typescript-eslint/eslint-plugin": "^7.0.0",
+    "@typescript-eslint/parser": "^7.0.0",
+    "@vitest/coverage-v8": "^1.0.0",
+    "eslint": "^8.0.0",
+    "prettier": "^3.0.0",
+    "tsup": "^8.0.0",
+    "typescript": "^5.0.0",
+    "vitest": "^1.0.0"
+  },
+  "engines": {
+    "node": ">=18.0.0"
+  }
+}
