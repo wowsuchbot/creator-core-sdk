@@ -17,6 +17,17 @@ Creator Core SDK simplifies the deployment and management of NFT collections usi
 - ⚛️ **React Integration** - Optional hooks for React applications
 - 🔗 **LSSVM Ready** - Built-in support for liquidity pool creation
 
+## Project Planning
+
+![Status: Planning](https://img.shields.io/badge/Status-Planning-yellow)
+
+This project is currently in the planning phase. Comprehensive documentation has been prepared to guide development:
+
+- **[Technical Requirements](./docs/REQUIREMENTS.md)** - Detailed technical specifications, contract support, and feature requirements
+- **[Task Breakdown](./docs/TASK_BREAKDOWN.md)** - Phase-by-phase implementation plan with actionable tasks
+
+These documents serve as the blueprint for building this SDK, with clear milestones and success criteria for each development phase.
+
 ## Quick Start
 
 ```bash
@@ -101,131 +112,79 @@ function DeployNFT() {
 
 ## Use Cases
 
-### 1. Bulk NFT Collection + LSSVM Pool
-
-Deploy a 100-NFT collection and create a liquidity pool in just 2 clicks:
+### 1. Bulk NFT Collection for LSSVM
 
 ```typescript
-import { deployAndMintCollection } from '@cryptoart/creator-core-sdk';
-import { createPool } from '@lssvm/sdk';
+// Create 100 NFTs for a liquidity pool
+const { contractAddress } = await deployERC721Creator({...});
 
-// Deploy and mint 100 NFTs
-const { contractAddress, tokenIds } = await deployAndMintCollection({
-  name: 'Pool Collection',
-  symbol: 'POOL',
-  tokenCount: 100,
-  metadata: generatedMetadata,
-});
+const tokens = generateTokenMetadata(100); // Your custom logic
+const { tokenIds } = await bulkMint({
+  contractAddress,
+  tokens,
+  batchSize: 20,
+}, walletClient);
 
-// Create LSSVM pool
-const pool = await createPool({
-  nftAddress: contractAddress,
-  tokenIds,
-  // ... pool config
-});
+// Now create LSSVM Pango pool with these NFTs
 ```
 
-### 2. Marketplace Integration
-
-Integrate Creator Core tools into your marketplace:
+### 2. CryptoArt Studio Integration
 
 ```typescript
-import { useDeployContract, useBulkMint } from '@cryptoart/creator-core-sdk/react';
+import { useDeployContract, useBulkMint } from '@cryptoart/creator-core-sdk';
 
-// Component with full creator workflow
-function CreatorStudio() {
-  // Deploy contract, upload metadata, mint tokens, list on marketplace
+// Use in Next.js app
+function CreateCollection() {
+  const { deploy, isDeploying, result } = useDeployContract();
+  const { mint, progress } = useBulkMint();
+
+  return (
+    <div>
+      <button onClick={() => deploy({...})}>Create Collection</button>
+      {result && (
+        <button onClick={() => mint(result.contractAddress, tokens)}>
+          Mint Collection
+        </button>
+      )}
+    </div>
+  );
 }
 ```
 
-### 3. Generative Art Drops
-
-Mint generative art collections efficiently:
+### 3. Custom Minting Workflow
 
 ```typescript
-import { prepareMetadata, bulkMint } from '@cryptoart/creator-core-sdk';
-
-// Generate art and metadata
-const metadata = await generateArt(100);
-
-// Upload to IPFS and mint
-const tokenURIs = await prepareMetadata(metadata);
-const result = await bulkMint({ tokenURIs, batchSize: 25 });
+// Custom progress tracking and error handling
+await bulkMint(
+  {
+    contractAddress,
+    tokens,
+    batchSize: 20,
+    onProgress: (minted, total, batch) => {
+      console.log(`Batch ${batch}: ${minted}/${total}`);
+      updateProgressBar(minted / total * 100);
+    },
+    onError: (error, batch) => {
+      logError(`Batch ${batch} failed`, error);
+      // Optionally retry or continue
+    },
+  },
+  walletClient
+);
 ```
-
-## Architecture
-
-```
-creator-core-sdk/
-├── src/
-│   ├── contracts/      # Contract deployment and interactions
-│   ├── metadata/       # IPFS/Arweave upload and generation
-│   ├── hooks/          # React hooks (optional)
-│   ├── utils/          # Gas estimation, batching, errors
-│   └── types/          # TypeScript definitions
-├── abis/               # Contract ABIs
-├── test/               # Comprehensive test suite
-├── examples/           # Usage examples
-└── docs/               # Documentation
-```
-
-## Requirements
-
-- Node.js 18+
-- TypeScript 5.0+
-- viem ^2.x
-
-## Related Projects
-
-- [cryptoart-studio](https://github.com/wowsuchbot/cryptoart-studio) - NFT marketplace monorepo
-- [such-lssvm](https://github.com/mxjxn/such-lssvm) - LSSVM liquidity pool tools
-- [creator-core-solidity](https://github.com/mxjxn/creator-core-solidity) - Creator Core smart contracts
-
-## Development
-
-```bash
-# Clone repository
-git clone https://github.com/wowsuchbot/creator-core-sdk.git
-cd creator-core-sdk
-
-# Install dependencies
-npm install
-
-# Run tests
-npm test
-
-# Build package
-npm run build
-
-# Run examples
-npm run example:deploy
-```
-
-## Contributing
-
-Contributions are welcome! Please read our [Contributing Guide](./CONTRIBUTING.md) for details.
-
-## License
-
-MIT License - see [LICENSE](./LICENSE) for details.
-
-## Support
-
-- [GitHub Issues](https://github.com/wowsuchbot/creator-core-sdk/issues)
-- [Documentation](./docs/)
-- [Examples](./examples/)
 
 ## Roadmap
 
-- [x] Core contract deployment
-- [x] Bulk minting with batching
-- [x] IPFS metadata upload
-- [ ] Arweave integration
-- [ ] Extension management
-- [ ] Cross-chain support
-- [ ] Gasless minting (meta-transactions)
-- [ ] Advanced royalty splitting
+- [ ] Phase 1: Core Functionality (ERC721/ERC1155 deployment & minting)
+- [ ] Phase 2: Metadata Management (IPFS/Arweave)
+- [ ] Phase 3: React Hooks (useDeployContract, useBulkMint)
+- [ ] Phase 4: LSSVM support (bulk transfer utilities)
+- [ ] Phase 5: Advanced Features (gas optimization, retry logic)
 
----
+## Contributing
 
-**Built with ❤️ for the NFT creator community**
+Contributions are welcome! Please read our [Contributing Guide](./CONTRIBUTING.md) before submitting a PR.
+
+## License
+
+MIT © 2026 CryptoArt Studio
