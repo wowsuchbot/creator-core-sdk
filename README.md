@@ -13,178 +13,218 @@ Creator Core SDK simplifies the deployment and management of NFT collections usi
 - 🚀 **Easy Deployment** - Deploy ERC721/ERC1155 contracts in a few lines of code
 - 🎨 **Bulk Minting** - Mint hundreds of NFTs efficiently with automatic batching
 - 📦 **Metadata Management** - Seamless IPFS/Arweave integration for metadata
-- ⛽ **Gas Optimization** - Automatic batch sizing and gas estimation
+- ⚡ **Gas Optimization** - Automatic batch sizing and gas estimation
 - ⚛️ **React Integration** - Optional hooks for React applications
 - 🔗 **LSSVM Ready** - Built-in support for liquidity pool creation
 
-## Project Planning
+## Project Status
 
-![Status: Planning](https://img.shields.io/badge/Status-Planning-yellow)
+![Status: Phase 1 Complete](https://img.shields.io/badge/Status-Phase%201%20Complete-green)
 
-This project is currently in the planning phase. Comprehensive documentation has been prepared to guide development:
+**Phase 1 - Core Infrastructure: ✅ COMPLETE**
+
+The foundational infrastructure and core deployment functionality is now complete:
+
+- ✅ TypeScript project setup with tsup bundler
+- ✅ Dual module exports (ESM + CJS)
+- ✅ Vitest testing framework configured
+- ✅ ESLint and Prettier for code quality
+- ✅ Creator Core contract ABIs integrated
+- ✅ Core SDK structure with contract clients
+- ✅ Basic ERC721 deployment functionality
+- ✅ Comprehensive test coverage
+- ✅ GitHub Actions CI/CD pipeline
+
+### Documentation
 
 - **[Technical Requirements](./docs/REQUIREMENTS.md)** - Detailed technical specifications, contract support, and feature requirements
 - **[Task Breakdown](./docs/TASK_BREAKDOWN.md)** - Phase-by-phase implementation plan with actionable tasks
 
-These documents serve as the blueprint for building this SDK, with clear milestones and success criteria for each development phase.
-
-## Quick Start
+## Installation
 
 ```bash
 npm install @cryptoart/creator-core-sdk viem
 ```
 
+## Quick Start
+
 ```typescript
-import { deployERC721Creator, bulkMint } from '@cryptoart/creator-core-sdk';
-import { createWalletClient, http } from 'viem';
-import { base } from 'viem/chains';
+import { CreatorCoreSDK } from '@cryptoart/creator-core-sdk';
+import { createPublicClient, createWalletClient, http } from 'viem';
+import { mainnet } from 'viem/chains';
+import { privateKeyToAccount } from 'viem/accounts';
+
+// Set up clients
+const publicClient = createPublicClient({
+  chain: mainnet,
+  transport: http(),
+});
+
+const account = privateKeyToAccount('0x...');
+const walletClient = createWalletClient({
+  account,
+  chain: mainnet,
+  transport: http(),
+});
+
+// Initialize SDK
+const sdk = new CreatorCoreSDK(publicClient, walletClient);
 
 // Deploy a new NFT collection
-const { contractAddress } = await deployERC721Creator(
-  {
-    name: 'My Collection',
-    symbol: 'MYCOL',
-    royaltyBps: 500, // 5%
-  },
-  walletClient
+const deployment = await sdk.deployERC721({
+  name: 'My Collection',
+  symbol: 'MYCOL',
+});
+
+console.log('Deployed to:', deployment.contractAddress);
+
+// Get contract client
+const creator = sdk.getERC721Creator(deployment.contractAddress);
+
+// Mint a single NFT
+const mint = await creator.mint(
+  '0xRecipientAddress',
+  'ipfs://QmYourTokenURI'
 );
 
-// Bulk mint 100 NFTs
-const result = await bulkMint(
-  {
-    contractAddress,
-    tokens: tokenMetadata, // Array of 100 token URIs
-    batchSize: 20,
-    onProgress: (minted, total) => {
-      console.log(`Minted ${minted}/${total}`);
-    },
-  },
-  walletClient
+console.log('Minted token:', mint.tokenId);
+
+// Mint multiple NFTs
+const batchMint = await creator.mintBatch(
+  '0xRecipientAddress',
+  10 // mint 10 NFTs
 );
+
+console.log('Minted tokens:', batchMint.tokenIds);
 ```
 
 ## Features
 
 ### Contract Deployment
 
-- Deploy ERC721 or ERC1155 Creator contracts
-- Support for upgradeable and enumerable variants
-- Configurable royalties (EIP-2981)
+- Deploy ERC721 Creator contracts
+- Support for upgradeable and enumerable variants (coming soon)
+- Configurable royalties (EIP-2981) (coming soon)
 - Gas estimation before deployment
 
 ### Minting
 
 - Single token minting
 - Bulk minting with automatic batching
-- Progress tracking for large collections
-- Per-token royalty configuration
-- Retry logic for failed transactions
+- Progress tracking for large collections (coming soon)
+- Per-token royalty configuration (coming soon)
+- Retry logic for failed transactions (coming soon)
 
 ### Metadata
 
-- IPFS upload via Pinata or NFT.Storage
-- Arweave upload support
-- Metadata generation helpers
-- Batch upload optimization
+- IPFS upload via Pinata or NFT.Storage (coming soon)
+- Arweave upload support (coming soon)
+- Metadata generation helpers (coming soon)
+- Batch upload optimization (coming soon)
 
-### React Hooks
+### LSSVM Integration
+
+- Create liquidity pools for collections (coming soon)
+- Configure bonding curves (coming soon)
+- Deposit NFTs into pools (coming soon)
+
+## API Reference
+
+### `CreatorCoreSDK`
+
+The main SDK class for interacting with Creator Core contracts.
 
 ```typescript
-import { useDeployContract, useBulkMint } from '@cryptoart/creator-core-sdk/react';
-
-function DeployNFT() {
-  const { deploy, state, result } = useDeployContract();
-  
-  return (
-    <button onClick={() => deploy({ name: 'My NFT', symbol: 'NFT' })}>
-      {state === 'deploying' ? 'Deploying...' : 'Deploy Contract'}
-    </button>
-  );
-}
+const sdk = new CreatorCoreSDK(publicClient, walletClient, config?);
 ```
 
-## Documentation
+#### Methods
 
-- [Getting Started Guide](./docs/getting-started.md)
-- [API Reference](./docs/api-reference.md)
-- [Examples](./examples/)
-- [Recipes](./docs/recipes.md)
+- `deployERC721(config)` - Deploy a new ERC721 Creator contract
+- `getERC721Creator(address)` - Get a client for an existing contract
+- `getFactoryAddress()` - Get the factory contract address
+- `getChainId()` - Get the current chain ID
 
-## Use Cases
+### `ERC721Creator`
 
-### 1. Bulk NFT Collection for LSSVM
+Client for interacting with deployed ERC721 Creator contracts.
 
 ```typescript
-// Create 100 NFTs for a liquidity pool
-const { contractAddress } = await deployERC721Creator({...});
-
-const tokens = generateTokenMetadata(100); // Your custom logic
-const { tokenIds } = await bulkMint({
-  contractAddress,
-  tokens,
-  batchSize: 20,
-}, walletClient);
-
-// Now create LSSVM Pango pool with these NFTs
+const creator = sdk.getERC721Creator(contractAddress);
 ```
 
-### 2. CryptoArt Studio Integration
+#### Methods
 
-```typescript
-import { useDeployContract, useBulkMint } from '@cryptoart/creator-core-sdk';
+- `mint(to, uri?)` - Mint a single NFT
+- `mintBatch(to, count?, uris?)` - Mint multiple NFTs
+- `tokenURI(tokenId)` - Get token metadata URI
+- `balanceOf(owner)` - Get token balance
+- `name()` - Get collection name
+- `symbol()` - Get collection symbol
+- `owner()` - Get contract owner
 
-// Use in Next.js app
-function CreateCollection() {
-  const { deploy, isDeploying, result } = useDeployContract();
-  const { mint, progress } = useBulkMint();
+## Development
 
-  return (
-    <div>
-      <button onClick={() => deploy({...})}>Create Collection</button>
-      {result && (
-        <button onClick={() => mint(result.contractAddress, tokens)}>
-          Mint Collection
-        </button>
-      )}
-    </div>
-  );
-}
+### Setup
+
+```bash
+git clone https://github.com/wowsuchbot/creator-core-sdk.git
+cd creator-core-sdk
+npm install
 ```
 
-### 3. Custom Minting Workflow
+### Build
 
-```typescript
-// Custom progress tracking and error handling
-await bulkMint(
-  {
-    contractAddress,
-    tokens,
-    batchSize: 20,
-    onProgress: (minted, total, batch) => {
-      console.log(`Batch ${batch}: ${minted}/${total}`);
-      updateProgressBar(minted / total * 100);
-    },
-    onError: (error, batch) => {
-      logError(`Batch ${batch} failed`, error);
-      // Optionally retry or continue
-    },
-  },
-  walletClient
-);
+```bash
+npm run build
+```
+
+### Test
+
+```bash
+npm test
+```
+
+### Lint
+
+```bash
+npm run lint
+npm run format
 ```
 
 ## Roadmap
 
-- [ ] Phase 1: Core Functionality (ERC721/ERC1155 deployment & minting)
-- [ ] Phase 2: Metadata Management (IPFS/Arweave)
-- [ ] Phase 3: React Hooks (useDeployContract, useBulkMint)
-- [ ] Phase 4: LSSVM support (bulk transfer utilities)
-- [ ] Phase 5: Advanced Features (gas optimization, retry logic)
+### Phase 2 - Enhanced Functionality (Planned)
+- Bulk minting with progress tracking
+- IPFS/Arweave metadata management
+- Gas optimization strategies
+- Error handling and retry logic
+
+### Phase 3 - LSSVM Integration (Planned)
+- Liquidity pool creation
+- Pool configuration and management
+- NFT deposits and withdrawals
+
+### Phase 4 - Developer Experience (Planned)
+- React hooks
+- CLI tool
+- Example applications
+- Advanced documentation
 
 ## Contributing
 
-Contributions are welcome! Please read our [Contributing Guide](./CONTRIBUTING.md) before submitting a PR.
+Contributions are welcome! Please read the [contribution guidelines](./CONTRIBUTING.md) first.
 
 ## License
 
-MIT © 2026 CryptoArt Studio
+MIT © [CryptoArt Studio](https://github.com/wowsuchbot)
+
+## Support
+
+- [Documentation](./docs)
+- [GitHub Issues](https://github.com/wowsuchbot/creator-core-sdk/issues)
+- [Discord Community](https://discord.gg/cryptoart)
+
+## Acknowledgments
+
+Built on top of [Manifold Creator Core](https://docs.manifold.xyz/) contracts.
