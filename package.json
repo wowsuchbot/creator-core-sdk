@@ -59,7 +59,8 @@
   },
   "homepage": "https://github.com/wowsuchbot/creator-core-sdk#readme",
   "dependencies": {
-    "viem": "^2.23.6"
+    "viem": "^2.23.6",
+    "ipfs-http-client": "^60.0.1"
   },
   "peerDependencies": {
     "react": "^18.0.0 || ^19.0.0",
@@ -91,7 +92,8 @@
     "react-dom": "^18.2.0",
     "tsup": "^8.0.0",
     "typescript": "^5.0.0",
-    "vitest": "^1.0.0"
+    "vitest": "^1.0.0",
+    "@types/ipfs-http-client": "^0.8.0"
   },
   "engines": {
     "node": ">=18.0.0"
