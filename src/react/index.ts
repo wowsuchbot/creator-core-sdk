@@ -1,53 +1,54 @@
 /**
- * React Hooks for Creator Core SDK
- * 
- * This module provides fully-typed React hooks for interacting with NFT Creator contracts.
- * All hooks leverage wagmi for Web3 integration and provide comprehensive TypeScript types.
- * 
- * @module @cryptoart/creator-core-sdk/react
+ * React hooks for Creator Core SDK
  */
 
 // Deployment hooks
-export {
-  useDeployERC721,
-  type UseDeployERC721Return,
-  type DeployERC721Config,
-  type DeploymentStatus,
-  type DeploymentError,
+export { useDeployERC721 } from './useDeployERC721';
+export { useDeployERC721WithMetadata } from './useDeployERC721WithMetadata';
+export type {
+  DeployERC721Config,
+  DeploymentStatus,
+  DeploymentError,
+  UseDeployERC721Return,
 } from './useDeployERC721';
-
-export {
-  useDeployERC1155,
-  type UseDeployERC1155Return,
-  type DeployERC1155Config,
-} from './useDeployERC1155';
+export type {
+  DeployERC721WithMetadataConfig,
+  UseDeployERC721WithMetadataReturn,
+} from './useDeployERC721WithMetadata';
 
 // Minting hooks
-export {
-  useMintNFT,
-  type UseMintNFTReturn,
-  type MintNFTConfig,
-  type MintStatus,
-  type MintError,
+export { useMintNFT } from './useMintNFT';
+export { useBatchMint } from './useBatchMint';
+export type {
+  MintNFTConfig,
+  MintStatus,
+  MintError,
+  UseMintNFTReturn,
 } from './useMintNFT';
-
-export {
-  useBatchMint,
-  type UseBatchMintReturn,
-  type BatchMintConfig,
-  type BatchMintStatus,
-  type BatchMintError,
-  type BatchMintProgress,
+export type {
+  BatchMintConfig,
+  BatchMintStatus,
+  UseBatchMintReturn,
 } from './useBatchMint';
 
-// Contract reading hooks
-export {
-  useCreatorContract,
-  useTokenURI,
-  useBalanceOf,
-  useOwnerOf,
-  type UseCreatorContractReturn,
-  type CreatorContractConfig,
-  type ContractMetadata,
-  type TokenOwnership,
-} from './useCreatorContract';
+// Metadata hooks
+export { useMetadataBuilder } from './metadata/useMetadataBuilder';
+export { useUploadMetadata } from './metadata/useUploadMetadata';
+export { useBatchUpload } from './metadata/useBatchUpload';
+
+export type {
+  UseMetadataBuilderOptions,
+  UseMetadataBuilderReturn,
+} from './metadata/useMetadataBuilder';
+
+export type {
+  UploadStatus,
+  UseUploadMetadataOptions,
+  UseUploadMetadataReturn,
+} from './metadata/useUploadMetadata';
+
+export type {
+  BatchUploadStatus,
+  UseBatchUploadOptions,
+  UseBatchUploadReturn,
+} from './metadata/useBatchUpload';
